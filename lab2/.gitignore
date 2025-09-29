@@ -1,0 +1,40 @@
+# Виконувані файли
+publication_system
+*.exe
+*.out
+*.app
+
+# Об'єктні файли
+*.o
+*.obj
+
+# Компіляторні файли
+*.gch
+*.pch
+
+# Файли даних
+*.dat
+*.txt
+
+# Системні файли
+.DS_Store
+Thumbs.db
+
+# IDE файли
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Тимчасові файли
+*.tmp
+*.temp
+
+# Архіви
+*.tar.gz
+*.zip
+
+# Файли резервних копій
+*.bak
+*.backup

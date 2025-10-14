@@ -1,440 +1,280 @@
+// Пункт 15: Демонстраційна програма
+// Пункт 13: В коментарях вказано реалізацію кожного пункту завдання
 #include <iostream>
-#include <string>
-#include <limits>
-#include "PublicationSystem.h"
+#include <fstream>
+#include "Publication.h"
+#include "Client.h"
 
 using namespace std;
 
-// Функція для очищення буферу вводу
-void clearInputBuffer() {
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+// Функція для демонстрації роботи з файлами (Пункт 5)
+void DemonstrateFileSaveLoad() {
+  cout << "\n========== Пункт 5: Робота з файлами ==========" << endl;
+
+  // Створюємо об'єкти
+  Publication pub(1, "Комп'ютерний світ", "IT журнал", 150.0, "Технології", 80);
+  Client client(1, "Іван", "Петренко", "ivan@example.com", "+380671234567", 1000.0);
+
+  // Записуємо у файли
+  ofstream pub_file("publications.dat");
+  pub.SaveToFile(pub_file);
+  pub_file.close();
+
+  ofstream client_file("clients.dat");
+  client.SaveToFile(client_file);
+  client_file.close();
+
+  cout << "Дані збережено у файли" << endl;
+
+  // Читаємо з файлів
+  Publication loaded_pub;
+  ifstream pub_in("publications.dat");
+  loaded_pub.LoadFromFile(pub_in);
+  pub_in.close();
+
+  Client loaded_client;
+  ifstream client_in("clients.dat");
+  loaded_client.LoadFromFile(client_in);
+  client_in.close();
+
+  cout << "Дані завантажено з файлів:" << endl;
+  loaded_pub.DisplayInfo();
+  loaded_client.DisplayInfo();
 }
 
-// Функція для безпечного вводу цілого числа
-int getIntInput() {
-    int value;
-    while (!(cin >> value)) {
-        cout << "Помилка! Введіть коректне число: ";
-        clearInputBuffer();
-    }
-    clearInputBuffer();
-    return value;
+// Пункт 10: Демонстрація взаємодії об'єктів
+void DemonstrateInteraction() {
+  cout << "\n========== Пункт 10: Взаємодія об'єктів ==========" << endl;
+
+  Publication magazine(2, "Наука і техніка", "Науковий журнал",
+                       120.0, "Наука", 64);
+  Client customer(2, "Марія", "Коваленко", "maria@example.com",
+                  "+380672345678", 800.0);
+
+  cout << "До покупки:" << endl;
+  customer.DisplayInfo();
+
+  // Клієнт купує підписку (взаємодія двох об'єктів)
+  customer.PurchaseSubscription(magazine, 6);
+
+  cout << "\nПісля покупки:" << endl;
+  customer.DisplayInfo();
 }
 
-// Функція для безпечного вводу числа з плаваючою комою
-double getDoubleInput() {
-    double value;
-    while (!(cin >> value)) {
-        cout << "Помилка! Введіть коректне число: ";
-        clearInputBuffer();
-    }
-    clearInputBuffer();
-    return value;
+// Пункт 11: Демонстрація роботи з покажчиками
+void DemonstratePointers() {
+  cout << "\n========== Пункт 11: Робота з покажчиками ==========" << endl;
+
+  // Створюємо об'єкт через покажчик
+  Publication* pub_ptr = new Publication(3, "Автосвіт",
+                                         "Журнал для автолюбителів",
+                                         180.0, "Автомобілі", 96);
+
+  cout << "Робота через покажчик:" << endl;
+  pub_ptr->DisplayInfo();
+  pub_ptr->AddRating(4.5);
+  pub_ptr->AddRating(5.0);
+
+  cout << "\nПісля додавання рейтингів:" << endl;
+  pub_ptr->DisplayInfo();
+
+  // Звільняємо пам'ять
+  delete pub_ptr;
+  cout << "Пам'ять звільнено" << endl;
 }
 
-// Функція для вводу рядка
-string getStringInput() {
-    string input;
-    getline(cin, input);
-    return input;
+// Пункт 12: Демонстрація методу з динамічною пам'яттю та сортуванням
+void DemonstrateDynamicMemory() {
+  cout << "\n========== Пункт 12: Динамічна пам'ять та сортування ==========" << endl;
+
+  Publication pub(4, "Здоров'я", "Медичний журнал", 100.0, "Медицина", 72);
+
+  int size;
+  int* ratings = pub.GenerateAndSortRatings(size);
+
+  cout << "Згенеровано та відсортовано " << size
+       << " випадкових рейтингів:" << endl;
+  for (int i = 0; i < size; i++) {
+    cout << ratings[i] << " ";
+  }
+  cout << endl;
+
+  // Звільняємо динамічну пам'ять
+  delete[] ratings;
+
+  // Те саме для Client
+  Client client(3, "Олексій", "Сидоренко", "oleksiy@example.com",
+                "+380673456789", 1500.0);
+
+  int* months = client.GenerateAndSortMonths(size);
+  cout << "\nЗгенеровано та відсортовано " << size
+       << " випадкових термінів підписки:" << endl;
+  for (int i = 0; i < size; i++) {
+    cout << months[i] << " ";
+  }
+  cout << endl;
+
+  delete[] months;
 }
 
-// Меню для роботи з виданнями
-void publicationMenu(PublicationSystem& system) {
-    int choice;
-    do {
-        cout << "\n=== МЕНЮ ВИДАНЬ ===" << endl;
-        cout << "1. Додати видання" << endl;
-        cout << "2. Переглянути всі видання" << endl;
-        cout << "3. Знайти видання за ID" << endl;
-        cout << "4. Пошук видань за категорією" << endl;
-        cout << "5. Пошук видань за ключовим словом" << endl;
-        cout << "6. Видалити видання" << endl;
-        cout << "0. Повернутися до головного меню" << endl;
-        cout << "Ваш вибір: ";
-        choice = getIntInput();
-        
-        switch (choice) {
-            case 1: {
-                cout << "Введіть назву видання: ";
-                string title = getStringInput();
-                cout << "Введіть опис: ";
-                string description = getStringInput();
-                cout << "Введіть ціну за місяць: ";
-                double price = getDoubleInput();
-                cout << "Введіть категорію: ";
-                string category = getStringInput();
-                
-                int id = system.addPublication(title, description, price, category);
-                cout << "Видання додано з ID: " << id << endl;
-                break;
-            }
-            case 2:
-                system.displayAllPublications();
-                break;
-            case 3: {
-                cout << "Введіть ID видання: ";
-                int id = getIntInput();
-                Publication* pub = system.findPublication(id);
-                if (pub) {
-                    pub->displayInfo();
-                } else {
-                    cout << "Видання з таким ID не знайдено!" << endl;
-                }
-                break;
-            }
-            case 4: {
-                cout << "Введіть категорію: ";
-                string category = getStringInput();
-                vector<Publication> pubs = system.getPublicationsByCategory(category);
-                if (pubs.empty()) {
-                    cout << "Видань у цій категорії не знайдено!" << endl;
-                } else {
-                    for (const auto& pub : pubs) {
-                        pub.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 5: {
-                cout << "Введіть ключове слово: ";
-                string keyword = getStringInput();
-                vector<Publication> pubs = system.searchPublications(keyword);
-                if (pubs.empty()) {
-                    cout << "Видань за цим запитом не знайдено!" << endl;
-                } else {
-                    for (const auto& pub : pubs) {
-                        pub.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 6: {
-                cout << "Введіть ID видання для видалення: ";
-                int id = getIntInput();
-                if (system.removePublication(id)) {
-                    cout << "Видання успішно видалено!" << endl;
-                } else {
-                    cout << "Не вдалося видалити видання!" << endl;
-                }
-                break;
-            }
-            case 0:
-                break;
-            default:
-                cout << "Невірний вибір!" << endl;
-        }
-    } while (choice != 0);
+// Пункт 7-8: Демонстрація роботи з масивами об'єктів
+void DemonstrateArrays() {
+  cout << "\n========== Пункт 7-8: Масиви об'єктів ==========" << endl;
+
+  // Пункт 7: Перший масив Publication
+  Publication publications[3];
+  publications[0] = Publication(5, "Кулінарія", "Рецепти", 90.0, "Кулінарія", 48);
+  publications[1] = Publication(6, "Мода", "Стиль життя", 110.0, "Мода", 56);
+  publications[2] = Publication(7, "Спорт", "Спортивні новини", 130.0, "Спорт", 64);
+
+  cout << "Масив видань:" << endl;
+  for (int i = 0; i < 3; i++) {
+    publications[i].DisplayInfo();
+  }
+
+  // Пункт 7: Другий масив Client
+  Client clients[3];
+  clients[0] = Client(4, "Андрій", "Мельник", "andriy@example.com",
+                     "+380674567890", 2000.0);
+  clients[1] = Client(5, "Ольга", "Шевченко", "olga@example.com",
+                     "+380675678901", 1800.0);
+  clients[2] = Client(6, "Дмитро", "Бондаренко", "dmytro@example.com",
+                     "+380676789012", 1500.0);
+
+  cout << "\nМасив клієнтів:" << endl;
+  for (int i = 0; i < 3; i++) {
+    clients[i].DisplayInfo();
+  }
+
+  // Пункт 8: Робота з об'єктами в масиві
+  cout << "\nКлієнти оформлюють підписки:" << endl;
+  for (int i = 0; i < 3; i++) {
+    clients[i].PurchaseSubscription(publications[i], 3);
+  }
 }
 
-// Меню для роботи з клієнтами
-void clientMenu(PublicationSystem& system) {
-    int choice;
-    do {
-        cout << "\n=== МЕНЮ КЛІЄНТІВ ===" << endl;
-        cout << "1. Додати клієнта" << endl;
-        cout << "2. Переглянути всіх клієнтів" << endl;
-        cout << "3. Знайти клієнта за ID" << endl;
-        cout << "4. Знайти клієнта за email" << endl;
-        cout << "5. Додати клієнта до чорного списку" << endl;
-        cout << "6. Видалити клієнта з чорного списку" << endl;
-        cout << "7. Переглянути чорний список" << endl;
-        cout << "8. Видалити клієнта" << endl;
-        cout << "0. Повернутися до головного меню" << endl;
-        cout << "Ваш вибір: ";
-        choice = getIntInput();
-        
-        switch (choice) {
-            case 1: {
-                cout << "Введіть ім'я: ";
-                string firstName = getStringInput();
-                cout << "Введіть прізвище: ";
-                string lastName = getStringInput();
-                cout << "Введіть email: ";
-                string email = getStringInput();
-                cout << "Введіть телефон: ";
-                string phone = getStringInput();
-                
-                int id = system.addClient(firstName, lastName, email, phone);
-                cout << "Клієнта додано з ID: " << id << endl;
-                break;
-            }
-            case 2:
-                system.displayAllClients();
-                break;
-            case 3: {
-                cout << "Введіть ID клієнта: ";
-                int id = getIntInput();
-                Client* client = system.findClient(id);
-                if (client) {
-                    client->displayInfo();
-                } else {
-                    cout << "Клієнта з таким ID не знайдено!" << endl;
-                }
-                break;
-            }
-            case 4: {
-                cout << "Введіть email: ";
-                string email = getStringInput();
-                Client* client = system.findClientByEmail(email);
-                if (client) {
-                    client->displayInfo();
-                } else {
-                    cout << "Клієнта з таким email не знайдено!" << endl;
-                }
-                break;
-            }
-            case 5: {
-                cout << "Введіть ID клієнта: ";
-                int id = getIntInput();
-                system.addToBlacklist(id);
-                cout << "Клієнта додано до чорного списку!" << endl;
-                break;
-            }
-            case 6: {
-                cout << "Введіть ID клієнта: ";
-                int id = getIntInput();
-                system.removeFromBlacklist(id);
-                cout << "Клієнта видалено з чорного списку!" << endl;
-                break;
-            }
-            case 7: {
-                vector<Client> blacklisted = system.getBlacklistedClients();
-                if (blacklisted.empty()) {
-                    cout << "Чорний список порожній!" << endl;
-                } else {
-                    for (const auto& client : blacklisted) {
-                        client.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 8: {
-                cout << "Введіть ID клієнта для видалення: ";
-                int id = getIntInput();
-                if (system.removeClient(id)) {
-                    cout << "Клієнта успішно видалено!" << endl;
-                } else {
-                    cout << "Не вдалося видалити клієнта!" << endl;
-                }
-                break;
-            }
-            case 0:
-                break;
-            default:
-                cout << "Невірний вибір!" << endl;
-        }
-    } while (choice != 0);
+// Пункт 4: Демонстрація перевантажених методів
+void DemonstrateOverloadedMethods() {
+  cout << "\n========== Пункт 4: Перевантажені методи ==========" << endl;
+
+  Publication pub(8, "Бізнес", "Економічний журнал", 200.0, "Бізнес", 88);
+
+  // Перевантажений метод SetPrice
+  cout << "Встановлення ціни без знижки:" << endl;
+  pub.SetPrice(200.0);
+  pub.DisplayInfo();
+
+  cout << "\nВстановлення ціни зі знижкою 20%:" << endl;
+  pub.SetPrice(200.0, 20.0);
+  pub.DisplayInfo();
+
+  // Перевантажений метод AddRating
+  cout << "\nДодавання одиночного рейтингу:" << endl;
+  pub.AddRating(4.5);
+  pub.DisplayInfo();
+
+  cout << "\nДодавання групового рейтингу:" << endl;
+  pub.AddRating(5, 3);  // 3 відгуки з оцінкою 5
+  pub.DisplayInfo();
+
+  // Для Client
+  Client client(7, "Наталія", "Коваль", "natalia@example.com",
+                "+380677890123", 500.0);
+
+  cout << "\nПоповнення балансу без бонусу:" << endl;
+  client.AddBalance(200.0);
+  client.DisplayInfo();
+
+  cout << "\nПоповнення балансу з бонусом 50 грн:" << endl;
+  client.AddBalance(300.0, 50.0);
+  client.DisplayInfo();
 }
 
-// Меню для роботи з замовленнями
-void orderMenu(PublicationSystem& system) {
-    int choice;
-    do {
-        cout << "\n=== МЕНЮ ЗАМОВЛЕНЬ ===" << endl;
-        cout << "1. Створити замовлення" << endl;
-        cout << "2. Додати видання до замовлення" << endl;
-        cout << "3. Оплатити замовлення" << endl;
-        cout << "4. Переглянути замовлення клієнта" << endl;
-        cout << "5. Переглянути всі замовлення" << endl;
-        cout << "6. Переглянути прострочені замовлення" << endl;
-        cout << "7. Скасувати замовлення" << endl;
-        cout << "8. Обробити прострочені замовлення" << endl;
-        cout << "0. Повернутися до головного меню" << endl;
-        cout << "Ваш вибір: ";
-        choice = getIntInput();
-        
-        switch (choice) {
-            case 1: {
-                cout << "Введіть ID клієнта: ";
-                int clientId = getIntInput();
-                int orderId = system.createOrder(clientId);
-                if (orderId > 0) {
-                    cout << "Замовлення створено з ID: " << orderId << endl;
-                } else {
-                    cout << "Не вдалося створити замовлення!" << endl;
-                }
-                break;
-            }
-            case 2: {
-                cout << "Введіть ID замовлення: ";
-                int orderId = getIntInput();
-                cout << "Введіть ID видання: ";
-                int pubId = getIntInput();
-                cout << "Введіть кількість місяців підписки: ";
-                int months = getIntInput();
-                
-                if (system.addPublicationToOrder(orderId, pubId, months)) {
-                    cout << "Видання додано до замовлення!" << endl;
-                } else {
-                    cout << "Не вдалося додати видання до замовлення!" << endl;
-                }
-                break;
-            }
-            case 3: {
-                cout << "Введіть ID замовлення для оплати: ";
-                int orderId = getIntInput();
-                if (system.processOrderPayment(orderId)) {
-                    cout << "Замовлення успішно оплачено!" << endl;
-                } else {
-                    cout << "Не вдалося оплатити замовлення!" << endl;
-                }
-                break;
-            }
-            case 4: {
-                cout << "Введіть ID клієнта: ";
-                int clientId = getIntInput();
-                vector<Order> orders = system.getClientOrders(clientId);
-                if (orders.empty()) {
-                    cout << "У клієнта немає замовлень!" << endl;
-                } else {
-                    for (const auto& order : orders) {
-                        order.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 5:
-                system.displayAllOrders();
-                break;
-            case 6: {
-                vector<Order> expired = system.getExpiredOrders();
-                if (expired.empty()) {
-                    cout << "Прострочених замовлень немає!" << endl;
-                } else {
-                    for (const auto& order : expired) {
-                        order.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 7: {
-                cout << "Введіть ID замовлення для скасування: ";
-                int orderId = getIntInput();
-                if (system.cancelOrder(orderId)) {
-                    cout << "Замовлення успішно скасовано!" << endl;
-                } else {
-                    cout << "Не вдалося скасувати замовлення!" << endl;
-                }
-                break;
-            }
-            case 8:
-                system.processExpiredOrders();
-                cout << "Прострочені замовлення оброблено!" << endl;
-                break;
-            case 0:
-                break;
-            default:
-                cout << "Невірний вибір!" << endl;
-        }
-    } while (choice != 0);
-}
+// Пункт 4: Демонстрація методів, що приймають та повертають об'єкти
+void DemonstrateObjectMethods() {
+  cout << "\n========== Пункт 4: Методи з об'єктами ==========" << endl;
 
-// Головне меню
-void mainMenu(PublicationSystem& system) {
-    int choice;
-    do {
-        cout << "\n========================================" << endl;
-        cout << "    СИСТЕМА ПЕРІОДИЧНИХ ВИДАНЬ" << endl;
-        cout << "========================================" << endl;
-        cout << "1. Управління виданнями" << endl;
-        cout << "2. Управління клієнтами" << endl;
-        cout << "3. Управління замовленнями" << endl;
-        cout << "4. Додати відгук на видання" << endl;
-        cout << "5. Переглянути відгуки видання" << endl;
-        cout << "6. Надіслати нагадування про підписку" << endl;
-        cout << "7. Переглянути повідомлення клієнта" << endl;
-        cout << "8. Згенерувати звіт системи" << endl;
-        cout << "9. Ініціалізувати тестові дані" << endl;
-        cout << "0. Вихід" << endl;
-        cout << "========================================" << endl;
-        cout << "Ваш вибір: ";
-        choice = getIntInput();
-        
-        switch (choice) {
-            case 1:
-                publicationMenu(system);
-                break;
-            case 2:
-                clientMenu(system);
-                break;
-            case 3:
-                orderMenu(system);
-                break;
-            case 4: {
-                cout << "Введіть ID клієнта: ";
-                int clientId = getIntInput();
-                cout << "Введіть ID видання: ";
-                int pubId = getIntInput();
-                cout << "Введіть оцінку (1-5): ";
-                int rating = getIntInput();
-                cout << "Введіть коментар: ";
-                string comment = getStringInput();
-                
-                int reviewId = system.addReview(clientId, pubId, rating, comment);
-                if (reviewId > 0) {
-                    cout << "Відгук додано з ID: " << reviewId << endl;
-                } else {
-                    cout << "Не вдалося додати відгук!" << endl;
-                }
-                break;
-            }
-            case 5: {
-                cout << "Введіть ID видання: ";
-                int pubId = getIntInput();
-                vector<Review> reviews = system.getPublicationReviews(pubId);
-                if (reviews.empty()) {
-                    cout << "Відгуків для цього видання немає!" << endl;
-                } else {
-                    for (const auto& review : reviews) {
-                        review.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 6:
-                system.sendExpiryNotifications();
-                system.sendPaymentReminders();
-                cout << "Нагадування надіслано!" << endl;
-                break;
-            case 7: {
-                cout << "Введіть ID клієнта: ";
-                int clientId = getIntInput();
-                vector<Notification> notifications = system.getClientNotifications(clientId);
-                if (notifications.empty()) {
-                    cout << "Повідомлень для клієнта немає!" << endl;
-                } else {
-                    for (const auto& notification : notifications) {
-                        notification.displayInfo();
-                    }
-                }
-                break;
-            }
-            case 8:
-                system.generateSystemReport();
-                break;
-            case 9:
-                system.initializeTestData();
-                cout << "Тестові дані ініціалізовано!" << endl;
-                break;
-            case 0:
-                cout << "До побачення!" << endl;
-                break;
-            default:
-                cout << "Невірний вибір! Спробуйте ще раз." << endl;
-        }
-    } while (choice != 0);
+  Publication pub1(9, "Подорожі", "Туристичний журнал", 140.0, "Туризм", 76);
+  Publication pub2(10, "Географія", "Науковий журнал", 140.0, "Туризм", 80);
+
+  // Метод, що приймає об'єкт класу
+  double discount = pub1.CalculateDiscount(pub2);
+  cout << "Знижка при купівлі двох видань: " << discount << "%" << endl;
+
+  // Метод, що повертає об'єкт класу
+  Publication copy = pub1.CreateCopy();
+  cout << "\nСтворена копія видання:" << endl;
+  copy.DisplayInfo();
+
+  // Для Client
+  Client client(8, "Сергій", "Ткаченко", "sergiy@example.com",
+                "+380678901234", 1000.0);
+  client.Subscribe(pub1, 6);
+
+  Publication subscribed = client.GetSubscribedPublication();
+  cout << "\nПідписка клієнта:" << endl;
+  subscribed.DisplayInfo();
 }
 
 int main() {
-    cout << "Ініціалізація системи періодичних видань..." << endl;
-    
-    PublicationSystem system;
-    
-    cout << "Система готова до роботи!" << endl;
-    
-    mainMenu(system);
-    
-    return 0;
+  cout << "========================================" << endl;
+  cout << "  ДЕМОНСТРАЦІЯ РОБОТИ КЛАСІВ" << endl;
+  cout << "  Лабораторна робота №2" << endl;
+  cout << "========================================" << endl;
+
+  // Пункт 6: 5 об'єктів у статичній пам'яті
+  cout << "\n========== Пункт 6: Об'єкти у статичній пам'яті ==========" << endl;
+  Publication static_pub1(11, "Література", "Літературний журнал",
+                          100.0, "Культура", 60);
+  Publication static_pub2(12, "Історія", "Історичний журнал",
+                          110.0, "Історія", 68);
+  Client static_client1(9, "Валерій", "Лисенко", "valeriy@example.com",
+                        "+380679012345", 1200.0);
+  Client static_client2(10, "Тетяна", "Гончаренко", "tetiana@example.com",
+                        "+380670123456", 1400.0);
+  Client static_client3(11, "Михайло", "Ковальчук", "mykhailo@example.com",
+                        "+380671234567", 1600.0);
+
+  cout << "Створено 5 об'єктів у статичній пам'яті" << endl;
+
+  // Пункт 6: 5 об'єктів у динамічній пам'яті
+  cout << "\n========== Пункт 6: Об'єкти у динамічній пам'яті ==========" << endl;
+  Publication* dyn_pub1 = new Publication(13, "Психологія", "Журнал про психологію",
+                                          130.0, "Психологія", 72);
+  Publication* dyn_pub2 = new Publication(14, "Філософія", "Філософський журнал",
+                                          140.0, "Філософія", 84);
+  Publication* dyn_pub3 = new Publication(15, "Архітектура", "Архітектурний журнал",
+                                          160.0, "Архітектура", 92);
+  Client* dyn_client1 = new Client(12, "Анна", "Савченко", "anna@example.com",
+                                   "+380672345678", 1800.0);
+  Client* dyn_client2 = new Client(13, "Віктор", "Павленко", "viktor@example.com",
+                                   "+380673456789", 2000.0);
+
+  cout << "Створено 5 об'єктів у динамічній пам'яті" << endl;
+
+  // Пункт 9: Демонстрація роботи всіх методів
+  cout << "\n========== Пункт 9: Демонстрація всіх методів ==========" << endl;
+
+  DemonstrateOverloadedMethods();
+  DemonstrateObjectMethods();
+  DemonstrateFileSaveLoad();
+  DemonstrateArrays();
+  DemonstrateInteraction();
+  DemonstratePointers();
+  DemonstrateDynamicMemory();
+
+  // Очищення динамічної пам'яті
+  cout << "\nОчищення динамічної пам'яті..." << endl;
+  delete dyn_pub1;
+  delete dyn_pub2;
+  delete dyn_pub3;
+  delete dyn_client1;
+  delete dyn_client2;
+  cout << "Пам'ять звільнено" << endl;
+
+  cout << "\n========================================" << endl;
+  cout << "  ДЕМОНСТРАЦІЮ ЗАВЕРШЕНО" << endl;
+  cout << "========================================" << endl;
+
+  return 0;
 }

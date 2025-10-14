@@ -1,8 +1,10 @@
-# Makefile для системи періодичних видань
+# Makefile для лабораторної роботи №2
+# Пункт 15: Три файли - .h, .cpp реалізації, .cpp демонстрація
+
 CXX = g++
 CXXFLAGS = -std=c++11 -Wall -Wextra -O2
-TARGET = publication_system
-SOURCES = main.cpp Publication.cpp Client.cpp Order.cpp Review.cpp Notification.cpp PublicationSystem.cpp
+TARGET = lab2_demo
+SOURCES = main.cpp publications.cpp clients.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
 
 # Головна ціль
@@ -10,26 +12,14 @@ $(TARGET): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS)
 
 # Компіляція окремих файлів
-main.o: main.cpp PublicationSystem.h
+main.o: main.cpp Publication.h Client.h
 	$(CXX) $(CXXFLAGS) -c main.cpp
 
-Publication.o: Publication.cpp Publication.h
-	$(CXX) $(CXXFLAGS) -c Publication.cpp
+publications.o: publications.cpp Publication.h
+	$(CXX) $(CXXFLAGS) -c publications.cpp
 
-Client.o: Client.cpp Client.h
-	$(CXX) $(CXXFLAGS) -c Client.cpp
-
-Order.o: Order.cpp Order.h Publication.h Client.h
-	$(CXX) $(CXXFLAGS) -c Order.cpp
-
-Review.o: Review.cpp Review.h
-	$(CXX) $(CXXFLAGS) -c Review.cpp
-
-Notification.o: Notification.cpp Notification.h
-	$(CXX) $(CXXFLAGS) -c Notification.cpp
-
-PublicationSystem.o: PublicationSystem.cpp PublicationSystem.h Publication.h Client.h Order.h Review.h Notification.h
-	$(CXX) $(CXXFLAGS) -c PublicationSystem.cpp
+clients.o: clients.cpp Client.h Publication.h
+	$(CXX) $(CXXFLAGS) -c clients.cpp
 
 # Запуск програми
 run: $(TARGET)
@@ -37,22 +27,15 @@ run: $(TARGET)
 
 # Компіляція в режимі налагодження
 debug: CXXFLAGS += -g -DDEBUG
-debug: $(TARGET)
+debug: clean $(TARGET)
 
 # Очищення
 clean:
-	rm -f $(OBJECTS) $(TARGET) *.dat *.txt
+	rm -f $(OBJECTS) $(TARGET) *.dat
 
-# Перевірка стилю коду (якщо встановлено cppcheck)
-check:
-	@which cppcheck > /dev/null && cppcheck --enable=all --std=c++11 *.cpp *.h || echo "cppcheck не встановлено"
+# Перевірка code style
+style:
+	@echo "Перевірка стилю коду згідно Google C++ Style Guide"
+	@which cpplint > /dev/null && cpplint --filter=-legal/copyright *.cpp *.h || echo "cpplint не встановлено"
 
-# Створення архіву
-archive:
-	tar -czf publication_system_$(shell date +%Y%m%d).tar.gz *.cpp *.h Makefile README.md
-
-# Встановлення залежностей (для різних систем)
-install-deps:
-	@echo "Проект використовує стандартну бібліотеку C++, додаткові залежності не потрібні"
-
-.PHONY: run debug clean check archive install-deps
+.PHONY: run debug clean style

@@ -1,0 +1,56 @@
+# Makefile for Lab 4: Inheritance in C++
+CXX = g++
+CXXFLAGS = -std=c++11 -Wall
+TARGET = lab4_demo
+
+# Object files
+OBJS = PrintedMaterial.o Magazine.o Newspaper.o Book.o \
+       DigitalContent.o Subscription.o DigitalSubscription.o main_lab4.o
+
+# Default target: build the program
+all: $(TARGET)
+
+# Link object files into executable
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+	@echo "Compilation successful! Run with: ./$(TARGET)"
+
+# Compile source files into object files
+PrintedMaterial.o: PrintedMaterial.cpp PrintedMaterial.h
+	$(CXX) $(CXXFLAGS) -c PrintedMaterial.cpp
+
+Magazine.o: Magazine.cpp Magazine.h PrintedMaterial.h
+	$(CXX) $(CXXFLAGS) -c Magazine.cpp
+
+Newspaper.o: Newspaper.cpp Newspaper.h PrintedMaterial.h
+	$(CXX) $(CXXFLAGS) -c Newspaper.cpp
+
+Book.o: Book.cpp Book.h PrintedMaterial.h
+	$(CXX) $(CXXFLAGS) -c Book.cpp
+
+DigitalContent.o: DigitalContent.cpp DigitalContent.h
+	$(CXX) $(CXXFLAGS) -c DigitalContent.cpp
+
+Subscription.o: Subscription.cpp Subscription.h
+	$(CXX) $(CXXFLAGS) -c Subscription.cpp
+
+DigitalSubscription.o: DigitalSubscription.cpp DigitalSubscription.h DigitalContent.h Subscription.h
+	$(CXX) $(CXXFLAGS) -c DigitalSubscription.cpp
+
+main_lab4.o: main_lab4.cpp PrintedMaterial.h Magazine.h Newspaper.h Book.h \
+             DigitalContent.h Subscription.h DigitalSubscription.h
+	$(CXX) $(CXXFLAGS) -c main_lab4.cpp
+
+# Run the program
+run: $(TARGET)
+	./$(TARGET)
+
+# Clean build artifacts
+clean:
+	rm -f $(OBJS) $(TARGET)
+	@echo "Cleaned build artifacts"
+
+# Rebuild from scratch
+rebuild: clean all
+
+.PHONY: all run clean rebuild

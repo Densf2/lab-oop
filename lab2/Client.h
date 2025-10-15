@@ -18,11 +18,18 @@ class Client {
   int subscription_months_;
   Publication subscribed_publication_;  // Пункт 3: Об'єкт іншого класу
 
+  // Лаб 3, Пункт 3: Статичне поле для спільного використання
+  static int total_clients_count_;
+
  public:  // Пункт 2: 3 загальні елементи
-  // Конструктори
-  Client();
+  // Лаб 3, Пункт 1: Конструктори
+  Client();  // Конструктор без параметрів
   Client(int id, const std::string& first_name, const std::string& last_name,
-         const std::string& email, const std::string& phone, double balance);
+         const std::string& email, const std::string& phone, double balance);  // З параметрами
+  Client(const Client& other);  // Конструктор копіювання
+
+  // Лаб 3, Пункт 2: Конструктор зі списком ініціалізації
+  Client(int id, const std::string& first_name, const std::string& last_name);
 
   // Деструктор
   ~Client();
@@ -54,6 +61,10 @@ class Client {
 
   // Пункт 12: Метод з динамічною пам'яттю та сортуванням
   int* GenerateAndSortMonths(int& size) const;
+
+  // Лаб 3, Пункт 3: Статичний метод для роботи зі статичним полем
+  static int GetTotalClientsCount();
+  static void ResetClientsCount();
 
   // Геттери
   int GetClientId() const { return client_id_; }

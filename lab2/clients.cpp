@@ -5,24 +5,79 @@
 #include <cstdlib>
 #include <ctime>
 
-// Конструктор за замовчуванням
+// Лаб 3, Пункт 3: Ініціалізація статичного поля даних поза класом
+int Client::total_clients_count_ = 0;
+
+// Лаб 3, Пункт 1: Конструктор без параметрів
 // Пункт 2: Ініціалізація всіх 9 приватних полів (включаючи об'єкт Publication)
 Client::Client()
     : client_id_(0), first_name_(""), last_name_(""), email_(""),
       phone_(""), is_blacklisted_(false), balance_(0.0),
-      subscription_months_(0), subscribed_publication_() {}
+      subscription_months_(0), subscribed_publication_() {
+  // Лаб 3, Пункт 3: Збільшуємо лічильник клієнтів
+  total_clients_count_++;
+  std::cout << "[Конструктор без параметрів] Створено Client #" 
+            << total_clients_count_ << std::endl;
+}
 
-// Конструктор з параметрами
+// Лаб 3, Пункт 1: Конструктор з параметрами
 Client::Client(int id, const std::string& first_name,
                const std::string& last_name, const std::string& email,
                const std::string& phone, double balance)
     : client_id_(id), first_name_(first_name), last_name_(last_name),
       email_(email), phone_(phone), is_blacklisted_(false),
-      balance_(balance), subscription_months_(0), subscribed_publication_() {}
+      balance_(balance), subscription_months_(0), subscribed_publication_() {
+  // Лаб 3, Пункт 3: Збільшуємо лічильник
+  total_clients_count_++;
+  std::cout << "[Конструктор з параметрами] Створено клієнта: " 
+            << first_name_ << " " << last_name_ 
+            << " (Всього: " << total_clients_count_ << ")" << std::endl;
+}
+
+// Лаб 3, Пункт 1: Конструктор копіювання
+// Створює повну копію клієнта включаючи вкладений об'єкт Publication
+Client::Client(const Client& other)
+    : client_id_(other.client_id_), 
+      first_name_(other.first_name_),
+      last_name_(other.last_name_),
+      email_(other.email_),
+      phone_(other.phone_),
+      is_blacklisted_(other.is_blacklisted_),
+      balance_(other.balance_),
+      subscription_months_(other.subscription_months_),
+      subscribed_publication_(other.subscribed_publication_) {  // Копіюємо вкладений об'єкт
+  // Лаб 3, Пункт 3: Збільшуємо лічильник
+  total_clients_count_++;
+  std::cout << "[Конструктор копіювання] Скопійовано клієнта: " 
+            << first_name_ << " " << last_name_ 
+            << " (Всього: " << total_clients_count_ << ")" << std::endl;
+}
+
+// Лаб 3, Пункт 2: Конструктор зі списком ініціалізації
+// Демонструє задання початкових значень констант і посилань
+Client::Client(int id, const std::string& first_name, const std::string& last_name)
+    : client_id_(id),                // Ініціалізація через список
+      first_name_(first_name),       // Ініціалізація через список
+      last_name_(last_name),         // Ініціалізація через список
+      email_("no-email@example.com"), // Константне значення
+      phone_("+380000000000"),       // Константне значення
+      is_blacklisted_(false),        // Початкове значення
+      balance_(0.0),                 // Початкове значення
+      subscription_months_(0),       // Початкове значення
+      subscribed_publication_() {    // Викликається конструктор без параметрів Publication
+  // Лаб 3, Пункт 3: Збільшуємо лічильник
+  total_clients_count_++;
+  std::cout << "[Конструктор зі списком ініціалізації] Створено: " 
+            << first_name_ << " " << last_name_ 
+            << " (Всього: " << total_clients_count_ << ")" << std::endl;
+}
 
 // Деструктор
 Client::~Client() {
-  // Очищення ресурсів якщо потрібно
+  // Лаб 3, Пункт 3: Зменшуємо лічильник при знищенні
+  total_clients_count_--;
+  std::cout << "[Деструктор] Знищено клієнта: " << first_name_ << " " << last_name_ 
+            << " (Залишилось: " << total_clients_count_ << ")" << std::endl;
 }
 
 // Пункт 4: Метод 1 - Перевантажений метод AddBalance
@@ -218,4 +273,16 @@ bool Client::operator<(const Client& other) const {
     return last_name_ < other.last_name_;
   }
   return first_name_ < other.first_name_;
+}
+
+// Лаб 3, Пункт 3: Статичний метод для отримання кількості клієнтів
+// Може бути викликаний без створення об'єкта класу
+int Client::GetTotalClientsCount() {
+  return total_clients_count_;
+}
+
+// Лаб 3, Пункт 3: Статичний метод для скидання лічильника
+void Client::ResetClientsCount() {
+  total_clients_count_ = 0;
+  std::cout << "[Статичний метод] Лічильник клієнтів скинуто до 0" << std::endl;
 }

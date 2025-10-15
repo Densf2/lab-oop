@@ -16,11 +16,18 @@ class Publication {
   int review_count_;
   int pages_;
 
+  // Лаб 3, Пункт 3: Статичне поле даних для спільного використання
+  static int total_publications_count_;
+
  public:  // Пункт 2: 3 загальні елементи (конструктор, деструктор, displayInfo)
-  // Конструктори
-  Publication();
+  // Лаб 3, Пункт 1: Конструктори
+  Publication();  // Конструктор без параметрів
   Publication(int id, const std::string& title, const std::string& description,
-              double price, const std::string& category, int pages);
+              double price, const std::string& category, int pages);  // З параметрами
+  Publication(const Publication& other);  // Конструктор копіювання
+
+  // Лаб 3, Пункт 2: Конструктор зі списком ініціалізації (для констант і посилань)
+  Publication(int id, const std::string& title, double price);
 
   // Деструктор
   ~Publication();
@@ -52,6 +59,10 @@ class Publication {
 
   // Пункт 12: Метод з динамічною пам'яттю та сортуванням
   int* GenerateAndSortRatings(int& size) const;
+
+  // Лаб 3, Пункт 3: Статичний метод для роботи зі статичним полем
+  static int GetTotalPublicationsCount();
+  static void ResetPublicationsCount();
 
   // Геттери для доступу до приватних полів
   int GetId() const { return id_; }

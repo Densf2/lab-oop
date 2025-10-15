@@ -5,24 +5,69 @@
 #include <cstdlib>
 #include <ctime>
 
-// Конструктор за замовчуванням
+// Лаб 3, Пункт 3: Ініціалізація статичного поля даних поза класом
+int Publication::total_publications_count_ = 0;
+
+// Лаб 3, Пункт 1: Конструктор без параметрів
 // Пункт 2: Ініціалізація всіх 8 приватних полів
 Publication::Publication()
     : id_(0), title_(""), description_(""), price_(0.0),
-      category_(""), rating_(0.0), review_count_(0), pages_(0) {}
+      category_(""), rating_(0.0), review_count_(0), pages_(0) {
+  // Лаб 3, Пункт 3: Збільшуємо лічильник створених об'єктів
+  total_publications_count_++;
+  std::cout << "[Конструктор без параметрів] Створено Publication #" 
+            << total_publications_count_ << std::endl;
+}
 
-// Конструктор з параметрами
+// Лаб 3, Пункт 1: Конструктор з параметрами
 // Пункт 2: Використання всіх полів даних
 Publication::Publication(int id, const std::string& title,
                          const std::string& description, double price,
                          const std::string& category, int pages)
     : id_(id), title_(title), description_(description),
-      price_(price), category_(category), rating_(0.0),
-      review_count_(0), pages_(pages) {}
+      price_(price), category_(category), rating_(10.0),
+      review_count_(0), pages_(pages) {
+  // Лаб 3, Пункт 3: Збільшуємо лічильник
+  total_publications_count_++;
+  std::cout << "[Конструктор з параметрами] Створено: " << title_ 
+            << " (Всього: " << total_publications_count_ << ")" << std::endl;
+}
+
+// Лаб 3, Пункт 1: Конструктор копіювання
+// Створює копію об'єкта з повним копіюванням всіх полів
+Publication::Publication(const Publication& other)
+    : id_(other.id_), title_(other.title_), description_(other.description_),
+      price_(other.price_), category_(other.category_), rating_(other.rating_),
+      review_count_(other.review_count_), pages_(other.pages_) {
+  // Лаб 3, Пункт 3: Збільшуємо лічильник
+  total_publications_count_++;
+  std::cout << "[Конструктор копіювання] Скопійовано: " << title_ 
+            << " (Всього: " << total_publications_count_ << ")" << std::endl;
+}
+
+// Лаб 3, Пункт 2: Конструктор зі списком ініціалізації
+// Демонструє використання початкових значень для констант і посилань
+Publication::Publication(int id, const std::string& title, double price)
+    : id_(id),                    // Ініціалізація через список
+      title_(title),              // Ініціалізація через список
+      description_("Без опису"),  // Константне значення
+      price_(price),              // Ініціалізація через список
+      category_("Загальна"),      // Константне значення
+      rating_(0.0),               // Початкове значення
+      review_count_(0),           // Початкове значення
+      pages_(0) {                 // Початкове значення
+  // Лаб 3, Пункт 3: Збільшуємо лічильник
+  total_publications_count_++;
+  std::cout << "[Конструктор зі списком ініціалізації] Створено: " << title_ 
+            << " (Всього: " << total_publications_count_ << ")" << std::endl;
+}
 
 // Деструктор
 Publication::~Publication() {
-  // Очищення ресурсів якщо потрібно
+  // Лаб 3, Пункт 3: Зменшуємо лічильник при знищенні
+  total_publications_count_--;
+  std::cout << "[Деструктор] Знищено: " << title_ 
+            << " (Залишилось: " << total_publications_count_ << ")" << std::endl;
 }
 
 // Пункт 4: Метод 1 - Перевантажений метод SetPrice
@@ -186,4 +231,16 @@ bool Publication::operator<(const Publication& other) const {
 // Оператор рівності
 bool Publication::operator==(const Publication& other) const {
   return id_ == other.id_;
+}
+
+// Лаб 3, Пункт 3: Статичний метод для отримання кількості створених об'єктів
+// Може бути викликаний без створення об'єкта класу
+int Publication::GetTotalPublicationsCount() {
+  return total_publications_count_;
+}
+
+// Лаб 3, Пункт 3: Статичний метод для скидання лічильника
+void Publication::ResetPublicationsCount() {
+  total_publications_count_ = 0;
+  std::cout << "[Статичний метод] Лічильник видань скинуто до 0" << std::endl;
 }

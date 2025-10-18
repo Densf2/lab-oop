@@ -4,6 +4,7 @@
 
 // Пункт 5: Конструктор похідного класу, який викликає конструктори обох базових класів
 // Пункт 7: Вивід повідомлень для відстеження порядку виклику конструкторів
+
 DigitalSubscription::DigitalSubscription(
     const std::string& format, double size, const std::string& url,
     int access_level, const std::string& platform,

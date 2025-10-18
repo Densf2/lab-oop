@@ -1,13 +1,13 @@
 ### Основні файли для Лаб 3:
 
-- ✅ `Publication.h` - заголовний файл класу Publication
-- ✅ `publications.cpp` - реалізація методів класу Publication
-- ✅ `Client.h` - заголовний файл класу Client
-- ✅ `clients.cpp` - реалізація методів класу Client
-- ✅ `main_lab3.cpp` - демонстраційна програма
-- ✅ `Makefile` - файл для компіляції
-- ✅ `README_LAB3.md` - повна документація
-- ✅ `REPORT_LAB3.md` - звіт про виконання
+- `Publication.h` - заголовний файл класу Publication
+- `publications.cpp` - реалізація методів класу Publication
+- `Client.h` - заголовний файл класу Client
+- `clients.cpp` - реалізація методів класу Client
+- `main_lab3.cpp` - демонстраційна програма
+- `Makefile` - файл для компіляції
+- `README_LAB3.md` - повна документація
+- `REPORT_LAB3.md` - звіт про виконання
 
 ### ПУНКТ 1: Конструктори
 
